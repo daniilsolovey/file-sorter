@@ -58,20 +58,25 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var filesWithError []string
+	var filesWithError []map[string]string
+	fileWithError := make(map[string]string)
 	for _, fileName := range listWithFileNames {
 		err = handleVMIFile(fileName)
 		if err != nil {
-			filesWithError = append(filesWithError, fileName)
+			fileWithError[err.Error()] = fileName
+			filesWithError = append(filesWithError, fileWithError)
 			log.Error(err)
 		}
 	}
 
 	if len(filesWithError) != 0 {
+		log.Warning("list of errors during the program operations:")
 		for _, fileWithError := range filesWithError {
-			log.Warningf(nil, "errors in file: %v", fileWithError)
+			for key, value := range fileWithError {
+				log.Warningf(nil, "error in file: %s\n error: %s", value, key)
+			}
 		}
 	} else {
-		log.Warning("sorting was finished without errors ")
+		log.Info("program operations was finished without errors")
 	}
 }

@@ -28,8 +28,8 @@ type VMI_FILE struct {
 	Region        string    `json:"region"`
 	Min           string    `json:"min"`
 	Max           string    `json:"max"`
-	NumDeltas     string    "numDeltas"
-	IsPoseControl string    "isPoseControl"
+	NumDeltas     string    `json:"numDeltas"`
+	IsPoseControl string    `json:"isPoseControl"`
 	Formula       []Formula `json:"formulas"`
 }
 
@@ -114,13 +114,7 @@ func handleVMIFile(fileName string) error {
 	}
 
 	// creating directory
-	var pathToResultDir string
-	if data.Group != "" {
-		pathToResultDir = PATH_TO_RESULT_DIR + data.Group
-	} else {
-		pathToResultDir = PATH_TO_RESULT_DIR + data.Region
-	}
-
+	pathToResultDir := PATH_TO_RESULT_DIR + data.Region
 	log.Infof(nil, "creating directory by path: %s", pathToResultDir)
 	if _, err := os.Stat(pathToResultDir); os.IsNotExist(err) {
 		err := os.MkdirAll(pathToResultDir, 0755)
@@ -134,10 +128,10 @@ func handleVMIFile(fileName string) error {
 	}
 
 	// copy file to result directory
-
+	fileName = data.DisplayName + VMI_EXTENTION
 	pathToResultFileVMI := pathToResultDir + "/" + fileName
 	log.Infof(nil, "copy .vmi file to directory by path: %s", pathToResultFileVMI)
-	err = ioutil.WriteFile(pathToResultFileVMI, editedFileData, 0644)
+	err = ioutil.WriteFile(pathToResultFileVMI, editedFileData, 0777)
 	if err != nil {
 		return karma.Format(
 			err,
@@ -145,8 +139,8 @@ func handleVMIFile(fileName string) error {
 			pathToResultFileVMI,
 		)
 	}
-	// copy .vmb file to result directory
 
+	// copy .vmb file to result directory
 	pathToCurrentFileVMB := strings.Replace(firstFilePath, ".vmi", ".vmb", -1)
 	log.Infof(nil, "read .vmb file by path: %s", pathToCurrentFileVMB)
 	fileVMB, err := ioutil.ReadFile(pathToCurrentFileVMB)
@@ -160,7 +154,7 @@ func handleVMIFile(fileName string) error {
 
 	pathToResultFileVMB := pathToResultDir + "/" + strings.Replace(fileName, ".vmi", ".vmb", -1)
 	log.Infof(nil, "copy .vmb file by path: %s", pathToResultFileVMB)
-	err = ioutil.WriteFile(pathToResultFileVMB, fileVMB, 0644)
+	err = ioutil.WriteFile(pathToResultFileVMB, fileVMB, 0777)
 	if err != nil {
 		return karma.Format(
 			err,
