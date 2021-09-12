@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	PATH_TO_DIR   = "./Morphs_main/Morphs/Male_Genitalia"
+	PATH_TO_DIR   = "./Morphs_main/Morphs/Male_Genitalia/"
 	ROOT_DIR      = "./"
-	RESULT_DIR    = "./Morphs_result/"
+	RESULT_DIR    = "./Morphs_result/Male_Genitalia/"
 	VMI_EXTENTION = ".vmi"
 )
 
@@ -59,6 +59,8 @@ func getFileNamesInDir() ([]string, error) {
 
 func handleVMIFile(fileName string) error {
 	firstFilePath := fmt.Sprintf("%s/%s", PATH_TO_DIR, fileName)
+	log.Infof(nil, "open file by path:%s", firstFilePath)
+
 	file, err := os.Open(firstFilePath)
 	if err != nil {
 		log.Fatal(err)
@@ -71,6 +73,7 @@ func handleVMIFile(fileName string) error {
 		}
 	}()
 
+	log.Info("read file bytes")
 	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		return karma.Format(
@@ -80,6 +83,7 @@ func handleVMIFile(fileName string) error {
 		)
 	}
 
+	log.Info("marshall json file bytes")
 	var data VMI_FILE
 	err = json.Unmarshal(fileBytes, &data)
 	if err != nil {
@@ -89,7 +93,6 @@ func handleVMIFile(fileName string) error {
 			firstFilePath,
 		)
 	}
-	log.Warning("data before", data)
 
 	// edit necessary file strings
 	displayName := data.DisplayName
@@ -107,20 +110,9 @@ func handleVMIFile(fileName string) error {
 		)
 	}
 
-	// Write back to file
-	// err = ioutil.WriteFile(fileName, editedFileData, 0644)
-	// if err != nil {
-	// 	return karma.Format(
-	// 		err,
-	// 		"unable to write file by path: %s",
-	// 		firstFilePath,
-	// 	)
-	// }
-
-	log.Warning("data after", data)
-
 	// creating directory
 	pathToResultDir := RESULT_DIR + data.Group
+	log.Infof(nil, "creating directory by path: %s", pathToResultDir)
 	if _, err := os.Stat(pathToResultDir); os.IsNotExist(err) {
 		err := os.MkdirAll(pathToResultDir, 0755)
 		if err != nil {
@@ -132,8 +124,10 @@ func handleVMIFile(fileName string) error {
 		}
 	}
 
-	// copy files to result directory
+	// copy file to result directory
+
 	pathToResultFileVMI := pathToResultDir + "/" + fileName
+	log.Infof(nil, "copy .vmi file to directory by path: %s", pathToResultFileVMI)
 	err = ioutil.WriteFile(pathToResultFileVMI, editedFileData, 0644)
 	if err != nil {
 		return karma.Format(
@@ -142,8 +136,10 @@ func handleVMIFile(fileName string) error {
 			pathToResultFileVMI,
 		)
 	}
-	// copy .vmb files to result directory
+	// copy .vmb file to result directory
+
 	pathToCurrentFileVMB := strings.Replace(firstFilePath, ".vmi", ".vmb", -1)
+	log.Infof(nil, "read .vmb file by path: %s", pathToCurrentFileVMB)
 	fileVMB, err := ioutil.ReadFile(pathToCurrentFileVMB)
 	if err != nil {
 		return karma.Format(
@@ -154,6 +150,7 @@ func handleVMIFile(fileName string) error {
 	}
 
 	pathToResultFileVMB := pathToResultDir + "/" + strings.Replace(fileName, ".vmi", ".vmb", -1)
+	log.Infof(nil, "copy .vmb file by path: %s", pathToResultFileVMB)
 	err = ioutil.WriteFile(pathToResultFileVMB, fileVMB, 0644)
 	if err != nil {
 		return karma.Format(
@@ -165,32 +162,3 @@ func handleVMIFile(fileName string) error {
 
 	return nil
 }
-
-// pathToResultFileVMB := pathToResultDir + "/" + strings.Replace(fileName, ".vmi", ".vmb", -1)
-// err = ioutil.WriteFile(pathToResultFileVMB, editedFileData, 0644)
-// if err != nil {
-// 	return karma.Format(
-// 		err,
-// 		"unable to write file by path: %s",
-// 		pathToResultFileVMB,
-// 	)
-// }
-
-// lines := strings.Split(string(fileBytes), "\n")
-// idContentLine := "\"id\" : " + "\""
-// for i, line := range lines {
-// 	log.Warning("line ", line)
-// 	if strings.Contains(line, idContentLine) {
-// 		lines[i] = idContentLine + " : " + "\"" + data.DisplayName + "\","
-// 	}
-// }
-
-// output := strings.Join(lines, "\n")
-// err = ioutil.WriteFile(fileName, []byte(output), 0644)
-// if err != nil {
-// 	return karma.Format(
-// 		err,
-// 		"unable to update file by path: %s",
-// 		path,
-// 	)
-// }

@@ -11,10 +11,12 @@ func main() {
 	}
 
 	log.Warning("len(listWithFileNames) ", len(listWithFileNames))
-	// log.Warning("listWithFileNames ", listWithFileNames)
-	err = handleVMIFile("Base Up-Down.vmi")
-	if err != nil {
-		log.Fatal(err)
+	for _, fileName := range listWithFileNames {
+		err = handleVMIFile(fileName)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 	}
 
 }
