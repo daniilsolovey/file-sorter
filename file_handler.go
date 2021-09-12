@@ -12,10 +12,13 @@ import (
 )
 
 const (
-	PATH_TO_DIR   = "./Morphs_main/Morphs/Male_Genitalia/"
-	ROOT_DIR      = "./"
-	RESULT_DIR    = "./Morphs_result/Male_Genitalia/"
 	VMI_EXTENTION = ".vmi"
+	VMB_EXTENTION = ".vmb"
+)
+
+var (
+	PATH_TO_INPUT_DIR  = "empty"
+	PATH_TO_RESULT_DIR = "empty"
 )
 
 type VMI_FILE struct {
@@ -38,7 +41,7 @@ type Formula struct {
 
 func getFileNamesInDir() ([]string, error) {
 	var result []string
-	path := PATH_TO_DIR
+	path := PATH_TO_INPUT_DIR
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		return nil, karma.Format(
@@ -58,7 +61,7 @@ func getFileNamesInDir() ([]string, error) {
 }
 
 func handleVMIFile(fileName string) error {
-	firstFilePath := fmt.Sprintf("%s/%s", PATH_TO_DIR, fileName)
+	firstFilePath := fmt.Sprintf("%s/%s", PATH_TO_INPUT_DIR, fileName)
 	log.Infof(nil, "open file by path:%s", firstFilePath)
 
 	file, err := os.Open(firstFilePath)
@@ -111,7 +114,7 @@ func handleVMIFile(fileName string) error {
 	}
 
 	// creating directory
-	pathToResultDir := RESULT_DIR + data.Group
+	pathToResultDir := PATH_TO_RESULT_DIR + data.Group
 	log.Infof(nil, "creating directory by path: %s", pathToResultDir)
 	if _, err := os.Stat(pathToResultDir); os.IsNotExist(err) {
 		err := os.MkdirAll(pathToResultDir, 0755)
