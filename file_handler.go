@@ -134,7 +134,7 @@ func handleVMIFile(fileName string) error {
 	}
 
 	// copy file to result directory
-
+	fileName = data.DisplayName + VMI_EXTENTION
 	pathToResultFileVMI := pathToResultDir + "/" + fileName
 	log.Infof(nil, "copy .vmi file to directory by path: %s", pathToResultFileVMI)
 	err = ioutil.WriteFile(pathToResultFileVMI, editedFileData, 0644)
@@ -145,8 +145,8 @@ func handleVMIFile(fileName string) error {
 			pathToResultFileVMI,
 		)
 	}
-	// copy .vmb file to result directory
 
+	// copy .vmb file to result directory
 	pathToCurrentFileVMB := strings.Replace(firstFilePath, ".vmi", ".vmb", -1)
 	log.Infof(nil, "read .vmb file by path: %s", pathToCurrentFileVMB)
 	fileVMB, err := ioutil.ReadFile(pathToCurrentFileVMB)
