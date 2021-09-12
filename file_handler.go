@@ -114,7 +114,13 @@ func handleVMIFile(fileName string) error {
 	}
 
 	// creating directory
-	pathToResultDir := PATH_TO_RESULT_DIR + data.Group
+	var pathToResultDir string
+	if data.Group != "" {
+		pathToResultDir = PATH_TO_RESULT_DIR + data.Group
+	} else {
+		pathToResultDir = PATH_TO_RESULT_DIR + data.Region
+	}
+
 	log.Infof(nil, "creating directory by path: %s", pathToResultDir)
 	if _, err := os.Stat(pathToResultDir); os.IsNotExist(err) {
 		err := os.MkdirAll(pathToResultDir, 0755)
